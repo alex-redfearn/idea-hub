@@ -47,5 +47,5 @@ test {
 }
 
 springBoot {
-    mainClass = 'com.vercoolapp.ideahub'
+    mainClass = 'com.verycoolapp.ideahub.Main'
 }
