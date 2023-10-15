@@ -2,3 +2,46 @@ server:
   servlet:
     context-path: /
   port: 8080
+
+spring:
+
+  mvc:
+    pathmatch:
+      # To prevent "Failed to start bean 'documentationPluginsBootstrapper'" exception
+      matching-strategy: ANT_PATH_MATCHER
+
+  docker:
+    compose:
+      # This will build, start, and stop docker containers from the compose file
+      lifecycle-management: start-and-stop
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/idea_hub
+    username: user
+    password: password
+
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        ddl-auto: none
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: false
+        # generate_statistics: true
+        jdbc:
+          time_zone: UTC
+    show-sql: true
+
+  liquibase:
+    change-log: classpath:releases/migrations.xml
+    contexts: local
+
+springdoc:
+  swagger-ui:
+    enabled: true
+
+logging:
+  level:
+    liquibase: DEBUG

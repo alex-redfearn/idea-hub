@@ -1,4 +1,30 @@
-server:
-  servlet:
-    context-path: /
-  port: 8080
+spring:
+
+  docker:
+    compose:
+      lifecycle-management: start-and-stop
+      skip:
+        in-tests: false
+
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        ddl-auto: none
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: false
+        # generate_statistics: true
+        jdbc:
+          time_zone: UTC
+    show-sql: true
+
+  liquibase:
+    change-log: classpath:releases/migrations.xml
+    contexts: local
+
+logging:
+  level:
+    liquibase: DEBUG
+    org.springframework.data.redis: DEBUG
