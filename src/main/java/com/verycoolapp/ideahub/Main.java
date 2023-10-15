@@ -1,4 +1,4 @@
-package com.vercoolapp.ideahub;
+package com.verycoolapp.ideahub;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
