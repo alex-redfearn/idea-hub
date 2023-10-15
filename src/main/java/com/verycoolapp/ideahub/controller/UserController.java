@@ -1,7 +1,6 @@
 package com.verycoolapp.ideahub.controller;
 
 import com.verycoolapp.ideahub.model.request.CreateUserRequest;
-import com.verycoolapp.ideahub.model.response.CreateUserResponse;
 import com.verycoolapp.ideahub.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,11 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -27,6 +22,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Creates a new user",
@@ -37,11 +33,9 @@ public class UserController {
                     @ApiResponse(responseCode = "500", description = "Oops something went wrong, please try again", content = @Content(schema = @Schema(hidden = true)))
             }
     )
-    public ResponseEntity<CreateUserResponse> create(@RequestBody CreateUserRequest request) {
-        log.debug("UserController.create, {}", request);
-
-        return new ResponseEntity<>(userService.create(request), HttpStatus.CREATED);
+    public void create(@RequestBody CreateUserRequest user) {
+        log.debug("UserController.create, {}", user);
+        userService.create(user);
     }
-
 
 }
