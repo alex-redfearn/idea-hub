@@ -26,5 +26,98 @@
       </column>
     </createTable>
   </changeSet>
+
+  <changeSet id="20231016113945" author="alex-redfearn">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <tableExists tableName="IDEA"/>
+      </not>
+    </preConditions>
+    <createTable tableName="IDEA">
+      <column name="ID" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="USER_ID" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="NAME" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="IMAGE_PATH" type="VARCHAR(512)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="IDEA"
+                             baseColumnNames="USER_ID"
+                             constraintName="idea_user_user_id_fk"
+                             referencedTableName="USER"
+                             referencedColumnNames="ID" />
+  </changeSet>
+
+  <changeSet id="20231016113950" author="alex-redfearn">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <tableExists tableName="IDEA_LIKE"/>
+      </not>
+    </preConditions>
+    <createTable tableName="IDEA_LIKE">
+      <column name="ID" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="IDEA_ID" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="USER_ID" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="IDEA_LIKE"
+                             baseColumnNames="IDEA_ID"
+                             constraintName="idea_like_idea_id_fk"
+                             referencedTableName="IDEA"
+                             referencedColumnNames="ID" />
+
+    <addForeignKeyConstraint baseTableName="IDEA_LIKE"
+                             baseColumnNames="USER_ID"
+                             constraintName="idea_like_user_id_fk"
+                             referencedTableName="USER"
+                             referencedColumnNames="ID" />
+  </changeSet>
+
+  <changeSet id="20231016113955" author="alex-redfearn">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <tableExists tableName="IDEA_COMMENT"/>
+      </not>
+    </preConditions>
+    <createTable tableName="IDEA_COMMENT">
+      <column name="ID" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="IDEA_ID" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="USER_ID" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="COMMENT" type="VARCHAR(512)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="IDEA_COMMENT"
+                             baseColumnNames="IDEA_ID"
+                             constraintName="idea_comment_idea_id_fk"
+                             referencedTableName="IDEA"
+                             referencedColumnNames="ID" />
+
+    <addForeignKeyConstraint baseTableName="IDEA_COMMENT"
+                             baseColumnNames="USER_ID"
+                             constraintName="idea_comment_user_id_fk"
+                             referencedTableName="USER"
+                             referencedColumnNames="ID" />
+  </changeSet>
 </databaseChangeLog>
 
