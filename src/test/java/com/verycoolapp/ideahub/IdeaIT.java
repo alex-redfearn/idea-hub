@@ -25,7 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @AutoConfigureMockMvc
 public class IdeaIT extends MySqlTestContainer {
 
-    public static final String IDEA_ENDPOINT = "/idea/%s";
+    public static final String CREATE_IDEA_ENDPOINT = "/idea/%s";
+    public static final String GET_IDEAS_ENDPOINT = "/ideas";
+
     private static final String LIGHT_BULB = "Light Bulb!";
     private static final TypeReference<IdeaResponse> IDEA_RESPONSE_TYPE_REFERENCE = new TypeReference<>() {
     };
@@ -49,7 +51,7 @@ public class IdeaIT extends MySqlTestContainer {
 
         MockHttpServletRequestBuilder createUser = restRequest.buildPost(USER_ENDPOINT, createUserRequest);
         UserResponse user = restRequest.perform(createUser, HttpStatus.CREATED, USER_TYPE_REFERENCE);
-        assertTrue(user.id() > 0);
+        assertTrue(user.getId() > 0);
 
         // AND A new idea
         CreateIdeaRequest createIdeaRequest = new CreateIdeaRequest()
@@ -57,7 +59,7 @@ public class IdeaIT extends MySqlTestContainer {
                 .setImagePath("https://www.cdn.vercoolapp.com/light-bulb");
 
         // WHEN A create request is sent
-        MockHttpServletRequestBuilder createIdea = restRequest.buildPost(String.format(IDEA_ENDPOINT, user.id()), createIdeaRequest);
+        MockHttpServletRequestBuilder createIdea = restRequest.buildPost(String.format(CREATE_IDEA_ENDPOINT, user.getId()), createIdeaRequest);
 
         // THEN A 201 response should be returned
         IdeaResponse ideaResponse = restRequest.perform(createIdea, HttpStatus.CREATED, IDEA_RESPONSE_TYPE_REFERENCE);
@@ -76,14 +78,14 @@ public class IdeaIT extends MySqlTestContainer {
                 .setImagePath("https://www.cdn.vercoolapp.com/random-image");
 
         // WHEN A create request is sent
-        MockHttpServletRequestBuilder createIdea = restRequest.buildPost(String.format(IDEA_ENDPOINT, 1L), createIdeaRequest);
+        MockHttpServletRequestBuilder createIdea = restRequest.buildPost(String.format(CREATE_IDEA_ENDPOINT, 1L), createIdeaRequest);
 
         // THEN A 400 response should be returned
         restRequest.perform(createIdea, HttpStatus.BAD_REQUEST);
     }
 
     @Test
-    public void givenAnExistingIdea_whenGetIdeasForUserRequest_thenReturnIdeas() {
+    public void givenAnExistingIdea_whenGetIdeasRequest_thenReturnIdeas() {
         // GIVEN An existing user
         CreateUserRequest createUserRequest = new CreateUserRequest()
                 .setEmail("peter.piper@verycoolapp.com")
@@ -98,16 +100,17 @@ public class IdeaIT extends MySqlTestContainer {
                 .setName("Super Cool Idea!")
                 .setImagePath("https://www.cdn.vercoolapp.com/cool");
 
-        MockHttpServletRequestBuilder createCoolIdea = restRequest.buildPost(String.format(IDEA_ENDPOINT, user.id()), createIdeaRequest);
+        MockHttpServletRequestBuilder createCoolIdea = restRequest.buildPost(String.format(CREATE_IDEA_ENDPOINT, user.getId()), createIdeaRequest);
         restRequest.perform(createCoolIdea, HttpStatus.CREATED);
 
         // WHEN Get Ideas is called
-        MockHttpServletRequestBuilder getIdea = restRequest.buildGet(String.format(IDEA_ENDPOINT, user.id()));
+        MockHttpServletRequestBuilder getIdea = restRequest.buildGet(GET_IDEAS_ENDPOINT);
 
-        // THEN A list of all the users ideas should be returned
+        // THEN A list of all the ideas should be returned
         List<IdeaResponse> idea = restRequest.perform(getIdea, HttpStatus.OK, IDEA_RESPONSE_LIST_TYPE_REFERENCE);
-        assertEquals(idea.size(), 1);
-        assertEquals(idea.get(0).getName(), createIdeaRequest.getName());
+
+        // AND The list should not be empty
+        assertTrue(idea.size() > 0);
     }
 
 }

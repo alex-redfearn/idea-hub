@@ -17,7 +17,6 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("idea")
 public class IdeaController {
 
     private final IdeaService ideaService;
@@ -26,7 +25,7 @@ public class IdeaController {
         this.ideaService = ideaService;
     }
 
-    @PostMapping(path = "{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "idea/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Creates a new idea!",
             description = "Creates an idea associated with a user. A valid user ID must be passed in the url." +
@@ -42,18 +41,18 @@ public class IdeaController {
         return new ResponseEntity<>(ideaService.create(idea), HttpStatus.CREATED);
     }
 
-    @GetMapping(path = "{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "ideas", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
-            summary = "Gets a list of ideas for a user",
-            description = "Gets a list of ideas for a user",
+            summary = "Gets all the ideas!",
+            description = "Gets a list of ideas.",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Idea successfully created"),
                     @ApiResponse(responseCode = "500", description = "Oops something went wrong, please try again", content = @Content(schema = @Schema(hidden = true)))
             }
     )
-    public ResponseEntity<List<IdeaResponse>> get(@PathVariable("userId") Long userId) {
-        log.debug("IdeaController.get, {}", userId);
-        return new ResponseEntity<>(ideaService.getIdeas(userId), HttpStatus.OK);
+    public ResponseEntity<List<IdeaResponse>> get() {
+        log.debug("IdeaController.get");
+        return new ResponseEntity<>(ideaService.getIdeas(), HttpStatus.OK);
     }
 
 }

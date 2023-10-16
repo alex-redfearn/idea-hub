@@ -3,8 +3,8 @@ package com.verycoolapp.ideahub.service;
 import com.verycoolapp.ideahub.model.entity.Idea;
 import com.verycoolapp.ideahub.model.entity.User;
 import com.verycoolapp.ideahub.model.request.CreateIdeaRequest;
-import com.verycoolapp.ideahub.model.response.Comment;
 import com.verycoolapp.ideahub.model.response.IdeaResponse;
+import com.verycoolapp.ideahub.model.response.UserResponse;
 import com.verycoolapp.ideahub.repository.IdeaRepository;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Validated
@@ -39,24 +38,29 @@ public class IdeaService {
                 .setImagePath(save.getImagePath());
     }
 
-    public List<IdeaResponse> getIdeas(long userId) {
-        log.debug("Finding ideas for user, {}", userId);
+    public List<IdeaResponse> getIdeas() {
+        log.debug("Finding ideas!");
 
-        List<Idea> ideas = ideaRepository.findIdeasByUser(new User().setId(userId));
+        // In production would probably want some form of pagination here.
+        List<Idea> ideas = ideaRepository.findAll();
 
-        // Collected ideas now mapping them to the response class.
+        return collectIdeas(ideas);
+    }
+
+    private List<IdeaResponse> collectIdeas(List<Idea> ideas) {
         return ideas.stream()
                 .map(idea -> new IdeaResponse()
                         .setName(idea.getName())
                         .setImagePath(idea.getImagePath())
-                        // Could have separate calls to get all the comments for an idea.
-                        .setComments(idea.getComments()
-                                .stream()
-                                .map(comment -> new Comment(comment.getText()))
-                                .collect(Collectors.toList())
+                        .setUser(new UserResponse()
+                                .setId(idea.getUser().getId())
+                                .setFirstName(idea.getUser().getFirstName())
+                                .setLastName(idea.getUser().getLastName())
                         )
+                        // Could have separate calls to get all the comments for an idea.
+                        .setComments(idea.getComments().size())
                         // Likewise... with likes. Probably more performant to just get the count initially.
-                        // Once a user actually expands the likes then fetch the list of users who have liked.
+                        // Once a user actually expands the likes or comments then fetch.
                         .setLikes(idea.getLikes().size()))
                 .toList();
     }

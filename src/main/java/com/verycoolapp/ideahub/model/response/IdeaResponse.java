@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.List;
-
 @Getter
 @Setter
 @ToString
@@ -14,11 +12,11 @@ import java.util.List;
 public class IdeaResponse {
 
     private Long id;
-    private Long userId;
     private String name;
+    private UserResponse user;
     private String imagePath;
 
     private int likes;
-    private List<Comment> comments;
+    private int comments;
 
 }
