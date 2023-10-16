@@ -3,7 +3,7 @@ package com.verycoolapp.ideahub.service;
 import com.verycoolapp.ideahub.exception.UserExistsException;
 import com.verycoolapp.ideahub.model.entity.User;
 import com.verycoolapp.ideahub.model.request.CreateUserRequest;
-import com.verycoolapp.ideahub.model.response.CreateUserResponse;
+import com.verycoolapp.ideahub.model.response.UserResponse;
 import com.verycoolapp.ideahub.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public CreateUserResponse create(@Valid CreateUserRequest request) {
+    public UserResponse create(@Valid CreateUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail()))
             throw new UserExistsException();
 
@@ -28,9 +28,9 @@ public class UserService {
                 .setFirstName(request.getFirstName())
                 .setLastName(request.getLastName());
 
-        User savedUser = userRepository.save(newUser);
+        com.verycoolapp.ideahub.model.entity.User savedUser = userRepository.save(newUser);
 
-        return new CreateUserResponse(savedUser.getId());
+        return new UserResponse(savedUser.getId());
     }
 
 }

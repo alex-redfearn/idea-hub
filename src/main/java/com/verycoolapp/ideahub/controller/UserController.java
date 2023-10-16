@@ -1,7 +1,7 @@
 package com.verycoolapp.ideahub.controller;
 
 import com.verycoolapp.ideahub.model.request.CreateUserRequest;
-import com.verycoolapp.ideahub.model.response.CreateUserResponse;
+import com.verycoolapp.ideahub.model.response.UserResponse;
 import com.verycoolapp.ideahub.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -37,7 +37,7 @@ public class UserController {
                     @ApiResponse(responseCode = "500", description = "Oops something went wrong, please try again", content = @Content(schema = @Schema(hidden = true)))
             }
     )
-    public ResponseEntity<CreateUserResponse> create(@RequestBody CreateUserRequest user) {
+    public ResponseEntity<UserResponse> create(@RequestBody CreateUserRequest user) {
         log.debug("UserController.create, {}", user);
         return new ResponseEntity<>(userService.create(user), HttpStatus.CREATED);
     }
