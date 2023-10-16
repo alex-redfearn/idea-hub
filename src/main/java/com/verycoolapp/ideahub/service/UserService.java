@@ -28,9 +28,13 @@ public class UserService {
                 .setFirstName(request.getFirstName())
                 .setLastName(request.getLastName());
 
-        com.verycoolapp.ideahub.model.entity.User savedUser = userRepository.save(newUser);
+        User savedUser = userRepository.save(newUser);
 
-        return new UserResponse(savedUser.getId());
+        return new UserResponse()
+                .setId(savedUser.getId())
+                .setEmail(savedUser.getEmail())
+                .setFirstName(savedUser.getFirstName())
+                .setLastName(savedUser.getLastName());
     }
 
 }

@@ -23,7 +23,8 @@ public class UserIT extends MySqlTestContainer {
     private static final String FIRST_NAME = "Alex";
     private static final String LAST_NAME = "Redfearn";
 
-    public static final TypeReference<UserResponse> USER_TYPE_REFERENCE = new TypeReference<>() {};
+    public static final TypeReference<UserResponse> USER_TYPE_REFERENCE = new TypeReference<>() {
+    };
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final RestRequest restRequest;
 
@@ -46,7 +47,7 @@ public class UserIT extends MySqlTestContainer {
         UserResponse perform = restRequest.perform(request, HttpStatus.CREATED, USER_TYPE_REFERENCE);
 
         // AND A new ID
-        assertTrue(perform.id() > 0);
+        assertTrue(perform.getId() > 0);
     }
 
     @Test
