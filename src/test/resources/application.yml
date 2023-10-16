@@ -4,7 +4,7 @@ spring:
     compose:
       lifecycle-management: start-and-stop
       skip:
-        in-tests: false
+        in-tests: true
 
   jpa:
     hibernate:

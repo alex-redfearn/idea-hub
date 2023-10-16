@@ -24,4 +24,9 @@ public class ExceptionController {
         return new ResponseEntity<>(validationErrors, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = UserExistsException.class)
+    public ResponseEntity<Object> handleUserExistsException(UserExistsException userExistsException) {
+        return new ResponseEntity<>(userExistsException.getMessage(), HttpStatus.CONFLICT);
+    }
+
 }

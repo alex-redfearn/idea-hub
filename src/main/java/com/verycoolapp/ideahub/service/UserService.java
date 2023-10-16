@@ -1,5 +1,6 @@
 package com.verycoolapp.ideahub.service;
 
+import com.verycoolapp.ideahub.exception.UserExistsException;
 import com.verycoolapp.ideahub.model.entity.User;
 import com.verycoolapp.ideahub.model.request.CreateUserRequest;
 import com.verycoolapp.ideahub.model.response.CreateUserResponse;
@@ -19,6 +20,9 @@ public class UserService {
     }
 
     public CreateUserResponse create(@Valid CreateUserRequest request) {
+        if (userRepository.existsByEmail(request.getEmail()))
+            throw new UserExistsException();
+
         User newUser = new User()
                 .setEmail(request.getEmail())
                 .setFirstName(request.getFirstName())
