@@ -9,4 +9,6 @@ import java.math.BigInteger;
 @Repository
 public interface UserRepository extends JpaRepository<User, BigInteger> {
 
+    boolean existsByEmail(String email);
+
 }

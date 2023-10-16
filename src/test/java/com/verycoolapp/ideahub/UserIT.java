@@ -3,6 +3,7 @@ package com.verycoolapp.ideahub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.verycoolapp.ideahub.model.request.CreateUserRequest;
 import com.verycoolapp.ideahub.model.response.CreateUserResponse;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,18 +22,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-public class UserIT {
+public class UserIT extends MySqlTestContainer {
 
     private static final String USER_ENDPOINT = "/user";
-
-    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String FIRST_NAME = "Alex";
     private static final String LAST_NAME = "Redfearn";
-
+    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final MockMvc mockMvc;
 
     public UserIT(@Autowired MockMvc mockMvc) {
         this.mockMvc = mockMvc;
+    }
+
+    @BeforeAll
+    public static void startDatabase() {
+        mysqlContainer.start();
     }
 
     @Test
@@ -61,9 +65,26 @@ public class UserIT {
                 .setLastName(LAST_NAME);
 
         // WHEN A create request is sent
-        // THEN A 404 response should be returned
         MockHttpServletRequestBuilder request = build(USER_ENDPOINT, createUserRequest);
+
+        // THEN A 404 response should be returned
         perform(request, HttpStatus.BAD_REQUEST, List.class);
+    }
+
+    @Test
+    public void givenAnExistingUser_whenCreateRequest_thenReturnConflict() {
+        // GIVEN An existing user
+        CreateUserRequest createUserRequest = new CreateUserRequest()
+                .setEmail("roger.badger@verycoolapp.com")
+                .setFirstName("Roger")
+                .setLastName("Badger");
+
+        MockHttpServletRequestBuilder newUserRequest = build(USER_ENDPOINT, createUserRequest);
+        perform(newUserRequest, HttpStatus.CREATED, CreateUserResponse.class);
+
+        // WHEN A create request is sent for the existing user
+        // THEN A 404 response should be returned
+        perform(newUserRequest, HttpStatus.CONFLICT);
     }
 
     private MockHttpServletRequestBuilder build(final String uri, final Object content) {
@@ -77,12 +98,20 @@ public class UserIT {
         }
     }
 
-    private <T> T perform(final MockHttpServletRequestBuilder request, final HttpStatus expectedStatus, Class<T> responseType) {
+    private MvcResult perform(final MockHttpServletRequestBuilder request, final HttpStatus expectedStatus) {
         try {
-            MvcResult mvcResult = mockMvc.perform(request)
+            return mockMvc.perform(request)
                     .andExpect(status().is(expectedStatus.value()))
                     .andReturn();
-            return OBJECT_MAPPER.readValue(mvcResult.getResponse().getContentAsString(), responseType);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private <T> T perform(final MockHttpServletRequestBuilder request, final HttpStatus expectedStatus, Class<T> responseType) {
+        try {
+            MvcResult perform = perform(request, expectedStatus);
+            return OBJECT_MAPPER.readValue(perform.getResponse().getContentAsString(), responseType);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
