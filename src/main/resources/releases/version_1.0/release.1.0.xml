@@ -102,7 +102,7 @@
       <column name="USER_ID" type="BIGINT">
         <constraints nullable="false"/>
       </column>
-      <column name="COMMENT" type="VARCHAR(512)">
+      <column name="TEXT" type="VARCHAR(512)">
         <constraints nullable="false"/>
       </column>
     </createTable>
